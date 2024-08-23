@@ -1,0 +1,1034 @@
+{
+	"info": {
+		"_postman_id": "a5af640b-8ce4-4ae4-9a06-2e2f033b09e5",
+		"name": "GitHUB Rest api testjng",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25691971"
+	},
+	"item": [
+		{
+			"name": "Get User INFO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//-- Check Username is matching \r",
+							"pm.test(\"Check UserInfo\", function () {\r",
+							"    pm.expect(pm.response.json().login).to.equal(pm.environment.get(\"Username\"));\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.variables.set(\"UserId\", pm.response.json().id);\r",
+							"pm.variables.set(\"UserURL;\", pm.response.json().url);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const Id =new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);\r",
+							"pm.variables.set(\"RepoName\",\"RepoName\"+Id);\r",
+							"pm.variables.set(\"UpdateRepoName\",\"RepoName1\"+Id);\r",
+							"pm.variables.set(\"Comment\",\"Test comment on issue\");\r",
+							"\r",
+							"// console.log(pm.variables.get(\"RepoName\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/users/{{Username}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"users",
+						"{{Username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Repos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var Json=pm.response.json();\r",
+							"//-- Check Username is matching \r",
+							"pm.test(\"Check UserInfo\", function () {\r",
+							"\r",
+							"    pm.expect(Json[0].owner.login).to.equal(pm.environment.get(\"Username\"));\r",
+							"    pm.expect(Json[0].owner.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"});\r",
+							"\r",
+							"pm.variables.set(\"Repo1\", Json[0].name);\r",
+							"pm.variables.set(\"RepoId1;\", Json[0].id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/user/repos",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Organization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var Json=pm.response.json();\r",
+							"//-- Check Organizations is matching \r",
+							"pm.test(\"Check Orgs infor\", function () {\r",
+							"\r",
+							"      pm.expect(Json).to.be.an('array').that.is.empty;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/user/orgs",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"orgs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Repo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 201\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"//-- Check RepoInfo is matching \r",
+							"pm.test(\"Check RepoInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().name).to.equal(pm.variables.get(\"RepoName\"));\r",
+							"    pm.expect(pm.response.json().owner.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"// check user info\r",
+							"pm.test(\"Check UserInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().owner.login).to.equal(pm.environment.get(\"Username\"));\r",
+							"    pm.expect(pm.response.json().owner.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.variables.set(\"newRepoid\", pm.response.json().id);\r",
+							"pm.variables.set(\"newRepoName\",pm.response.json().name);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{RepoName}}\",\r\n  \"description\": \"This is a sample repository to test GITHUB api.\",\r\n  \"homepage\": \"https://test.com\",\r\n  \"private\": false,\r\n  \"has_issues\": true,\r\n  \"has_projects\": true,\r\n  \"has_wiki\": true,\r\n  \"auto_init\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/user/repos",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update new Repo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//-- Check RepoInfo is matching \r",
+							"pm.test(\"Check RepoInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().name).to.equal(pm.variables.get(\"UpdateRepoName\"));\r",
+							"    pm.expect(pm.response.json().owner.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"// check user info\r",
+							"pm.test(\"Check UserInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().owner.login).to.equal(pm.environment.get(\"Username\"));\r",
+							"    pm.expect(pm.response.json().owner.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.variables.set(\"UpdateNewRepoName\",pm.response.json().name);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{UpdateRepoName}}\",\r\n  \"description\": \"This is a updated repository to test GITHUB api.\",\r\n  \"homepage\": \"https://test.com\",\r\n  \"private\": false,\r\n  \"has_issues\": true,\r\n  \"has_projects\": true,\r\n  \"has_wiki\": true,\r\n  \"auto_init\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{newRepoName}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{newRepoName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get New repo Info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//-- Check RepoInfo is matching \r",
+							"pm.test(\"Check RepoInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().name).to.equal(pm.variables.get(\"UpdateNewRepoName\"));\r",
+							"    pm.expect(pm.response.json().id).to.eq(pm.variables.get(\"newRepoid\"));\r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a WebHook",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 201\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"//-- Check RepoInfo is matching \r",
+							"pm.test(\"Check RepoInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().active).to.be.true;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.variables.set(\"webhookId\", pm.response.json().id);\r",
+							"pm.variables.set(\"webhookName\",pm.response.json().name);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"config\": {\r\n    \"url\": \"https://example.com/new-webhook-url\",\r\n    \"content_type\": \"json\",\r\n    \"secret\": \"new-webhook-secret\",\r\n    \"insecure_ssl\": \"0\"\r\n  },\r\n  \"events\": [\r\n    \"push\",\r\n    \"issues\"\r\n  ],\r\n  \"active\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/hooks",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"hooks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a WebHook",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var Json = pm.response.json();\r",
+							"//-- Check RepoInfo is matching \r",
+							"pm.test(\"Check RepoInfo\", function () {\r",
+							"\r",
+							"    pm.expect(Json[0].name).to.equal(pm.variables.get(\"webhookName\"));\r",
+							"    \r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/hooks",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"hooks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a WebHook",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 204\r",
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/hooks/{{webhookId}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"hooks",
+						"{{webhookId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New repo issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 201\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"//-- Check Assignee is matching \r",
+							"pm.test(\"Check AssigneeInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().assignee.login).to.equal(pm.environment.get(\"Username\"));\r",
+							"    pm.expect(pm.response.json().assignee.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"// -- check the state of issue \r",
+							"pm.test(\"Check Issue state\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().state_reason).to.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.variables.set(\"issueId\", pm.response.json().id);\r",
+							"pm.variables.set(\"issueNumber\", pm.response.json().number);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Bug is in production\",\r\n  \"body\": \"Issue with login credentials\",\r\n  \"assignees\": [\r\n   \"{{Username}}\"\r\n  ],\r\n  \"labels\": [\r\n    \"bug\",\r\n    \"urgent\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/issues",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Comment on issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 201\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"//-- Check Assignee is matching \r",
+							"pm.test(\"Check AssigneeInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().user.login).to.equal(pm.environment.get(\"Username\"));\r",
+							"    pm.expect(pm.response.json().user.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"body\": \"{{Comment}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/issues/{{issueNumber}}/comments",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"issues",
+						"{{issueNumber}}",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list of Comment on issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var Json = pm.response.json();\r",
+							"\r",
+							"//-- Check Assignee is matching \r",
+							"pm.test(\"Check UserInfo\", function () {\r",
+							"\r",
+							"    pm.expect(Json[0].user.login).to.equal(pm.environment.get(\"Username\"));\r",
+							"    pm.expect(Json[0].user.id).to.eq(pm.variables.get(\"UserId\"));\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"//-- Check Comment is matching \r",
+							"pm.test(\"Check Comment\", function () {\r",
+							"\r",
+							"    pm.expect(Json[0].body).to.equal(pm.variables.get(\"Comment\"));\r",
+							"   \r",
+							"    \r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/issues/{{issueNumber}}/comments",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"issues",
+						"{{issueNumber}}",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Notifications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/notifications",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"notifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get issues data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//-- Check Issue is matching \r",
+							"pm.test(\"Check IssueInfo\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().id).to.equal(pm.variables.get(\"issueId\"));\r",
+							"    pm.expect(pm.response.json().number).to.eq(pm.variables.get(\"issueNumber\"));\r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/issues/{{issueNumber}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"issues",
+						"{{issueNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Close Issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// -- check the state of issue \r",
+							"pm.test(\"Check Issue state\", function () {\r",
+							"\r",
+							"    pm.expect(pm.response.json().state_reason).to.eq(\"completed\");\r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"state\": \"closed\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/issues/{{issueNumber}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"issues",
+						"{{issueNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get issues data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var Json =pm.response.json();\r",
+							"//-- Check Issue is matching \r",
+							"    pm.test(\"Check No issue present\", function () {\r",
+							"      pm.expect(Json).to.be.an('array').that.is.empty;\r",
+							"    \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}/issues",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Repo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//-- For status code 204\r",
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/repos/{{Username}}/{{UpdateNewRepoName}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"repos",
+						"{{Username}}",
+						"{{UpdateNewRepoName}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
