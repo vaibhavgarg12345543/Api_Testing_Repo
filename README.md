@@ -21,5 +21,6 @@ This repo contains a Postman collection for API testing for GITHUB rest apis.
 4. Some variables are setted up in environment file
 5. Go to environment 
 6. import downloaded environment file `GitHUB.postman_environment`
-7. You can now use the imported collection to run the API tests in your postman.
+7. provide you generated token of github and username
+8. You can now use the imported collection to run the API tests in your postman.
 
