@@ -24,3 +24,6 @@ This repo contains a Postman collection for API testing for GITHUB rest apis.
 7. provide you generated token of github and username
 8. You can now use the imported collection to run the API tests in your postman.
 
+## Generate access token
+- https://github.com/settings/tokens   
+
